@@ -1,5 +1,5 @@
 ---
-// One lab log entry.
+// One lab log entry, same light heading as the overview.
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
 import { url, asset, teaser, ymd } from '../../lib/chrome';
@@ -14,20 +14,22 @@ const d = entry.data;
 ---
 <Page title={`${d.title} · Lab log · CDT`} description={teaser(entry.body) || d.title} active="lablog">
   <article class="lart">
-    <a class="lback" href={url('lablog/')}>← Lab log</a>
-    <header class="lplate lart-head">
-      <span class="lplate-k">{ymd(d.date)} · {d.category.toUpperCase()}</span>
+    <header class="lart-head">
+      <a class="lback" href={url('lablog/')}>← Lab log</a>
+      <div class="ld"><b>{ymd(d.date)}</b><span>{d.category.toUpperCase()}</span></div>
       <h1>{d.title}</h1>
     </header>
-    {d.image && (
-      <figure class="kframe lart-img"><img src={asset(d.image)} alt={d.title} /></figure>
-    )}
-    <div class="lprose"><Content /></div>
-    {d.link && <p><a class="lmore" href={d.link}>→ More about this</a></p>}
-    <nav class="lpn" aria-label="More entries">
-      {newer ? <a href={url(`lablog/${newer.slug}/`)}><span>Newer</span>{newer.data.title}</a> : <span></span>}
-      {older ? <a class="lpn-r" href={url(`lablog/${older.slug}/`)}><span>Older</span>{older.data.title}</a> : <span></span>}
-    </nav>
+    <div class="lart-body">
+      {d.image && (
+        <figure class="kframe lart-img"><img src={asset(d.image)} alt={d.title} /></figure>
+      )}
+      <div class="lprose"><Content /></div>
+      {d.link && <p><a class="lmore" href={d.link}>→ More about this</a></p>}
+      <nav class="lpn" aria-label="More entries">
+        {newer ? <a href={url(`lablog/${newer.slug}/`)}><span>← Newer</span>{newer.data.title}</a> : <span></span>}
+        {older ? <a class="lpn-r" href={url(`lablog/${older.slug}/`)}><span>Older →</span>{older.data.title}</a> : <span></span>}
+      </nav>
+    </div>
   </article>
   <script is:inline define:vars={{ base: url('') }}>
     document.querySelectorAll('.lprose img').forEach(function (i) {

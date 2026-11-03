@@ -1,67 +1,51 @@
 ---
-// Lab log overview: every entry as a hit on a timeline wire, newest first, grouped by year.
+// Lab log overview: big title with round filter chips on top, entries as a measurement log below, newest first.
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
-import { url, asset, esc, teaser, ymd } from '../../lib/chrome';
+import { url, asset, teaser, ymd } from '../../lib/chrome';
 
 const entries = (await getCollection('lablog')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const cats = [...new Set(entries.map((e) => e.data.category.toUpperCase()))];
-const years = [...new Set(entries.map((e) => e.data.date.getUTCFullYear()))];
-const span = years.length ? (years.length > 1 ? `${years[years.length - 1]}–${years[0]}` : `${years[0]}`) : '';
+const count = (c: string) => entries.filter((e) => e.data.category.toUpperCase() === c).length;
 ---
-<Page title="Lab log · CDT CASCADE Detector Technologies" description="Talks, deliveries and milestones from CDT in Heidelberg." active="lablog">
-  <section class="lhero">
-    <div class="lhero-in">
-      <div class="lplate">
-        <span class="lplate-k">CDT · HEIDELBERG</span>
-        <h1>Lab log</h1>
-        <p>Talks, deliveries and milestones from our workshop in Heidelberg, Germany.</p>
-        <span class="lplate-m">{entries.length} {entries.length === 1 ? 'entry' : 'entries'} · {span}</span>
-      </div>
-      <div class="lfilter" role="group" aria-label="Filter by category">
-        <button type="button" class="lchip on" data-f="*">ALL</button>
-        {cats.map((c) => <button type="button" class="lchip" data-f={c}>{c}</button>)}
-      </div>
+<Page title="Lab log · CDT CASCADE Detector Technologies" description="Talks, deliveries and milestones from CDT in Heidelberg, Germany." active="lablog">
+  <section class="ltop">
+    <h1>Lab log<span>Talks, deliveries and milestones from Heidelberg, Germany.</span></h1>
+    <div class="lfilter" role="group" aria-label="Filter by category">
+      <button type="button" class="lchip on" data-f="*" aria-pressed="true">ALL<span>{entries.length}</span></button>
+      {cats.map((c) => <button type="button" class="lchip" data-f={c} aria-pressed="false">{c}<span>{count(c)}</span></button>)}
     </div>
   </section>
 
-  <section class="ltl" aria-label="Entries">
-    {years.map((y) => (
-      <div class="lyear" data-year={y}>
-        <div class="lyear-n">{y}</div>
-        <ol class="lrows">
-          {entries.filter((e) => e.data.date.getUTCFullYear() === y).map((e, i) => (
-            <li class="lrow" data-cat={e.data.category.toUpperCase()}>
-              <a href={url(`lablog/${e.slug}/`)}>
-                <span class="ldt">{ymd(e.data.date)}</span>
-                <span class="lnode" aria-hidden="true"><i></i></span>
-                <span class="lbody">
-                  <span class="lcat">{e.data.category.toUpperCase()}</span>
-                  <span class="ltitle">{e.data.title}</span>
-                  {teaser(e.body) && <span class="lteaser">{teaser(e.body)}</span>}
-                </span>
-                {e.data.image ? (
-                  <span class="lthumb kframe"><img src={asset(e.data.image)} alt="" loading="lazy" /></span>
-                ) : (
-                  <span class="lthumb lthumb-empty" aria-hidden="true"></span>
-                )}
-              </a>
-            </li>
-          ))}
-        </ol>
-      </div>
-    ))}
+  <section class="llog" aria-label="Entries">
+    {entries.map((e) => {
+      const href = url(`lablog/${e.slug}/`);
+      const t = teaser(e.body);
+      return (
+        <article class={e.data.image ? 'lrow' : 'lrow lrow-noimg'} data-cat={e.data.category.toUpperCase()}>
+          <div class="ld"><b>{ymd(e.data.date)}</b><span>{e.data.category.toUpperCase()}</span></div>
+          <div class="lt">
+            <h2><a href={href}>{e.data.title}</a></h2>
+            {t && <p>{t}</p>}
+            <a class="lread" href={href} tabindex="-1">→ Read entry</a>
+          </div>
+          {e.data.image && (
+            <a class="kframe lthumb" href={href} tabindex="-1" aria-hidden="true"><img src={asset(e.data.image)} alt="" loading="lazy" /></a>
+          )}
+        </article>
+      );
+    })}
+    {entries.length === 0 && <p class="lempty">No entries yet.</p>}
   </section>
 
   <script is:inline>
     (function () {
-      var chips = document.querySelectorAll('.lchip'), rows = document.querySelectorAll('.lrow'), years = document.querySelectorAll('.lyear');
+      var chips = document.querySelectorAll('.lchip'), rows = document.querySelectorAll('.lrow');
       chips.forEach(function (c) {
         c.addEventListener('click', function () {
           var f = c.getAttribute('data-f');
-          chips.forEach(function (x) { x.classList.toggle('on', x === c); });
+          chips.forEach(function (x) { x.classList.toggle('on', x === c); x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
           rows.forEach(function (r) { r.hidden = !(f === '*' || r.getAttribute('data-cat') === f); });
-          years.forEach(function (y) { y.hidden = !y.querySelector('.lrow:not([hidden])'); });
         });
       });
     })();

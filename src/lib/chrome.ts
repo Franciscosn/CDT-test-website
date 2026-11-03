@@ -27,7 +27,7 @@ export const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 /** Plain-text teaser from Markdown. */
 export function teaser(md: string, n = 170): string {
   const t = md.replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/[#>*_`~-]+/g, ' ').replace(/\s+/g, ' ').trim();
+    .replace(/^\s*(?:[-*+]|\d+\.)\s+/gm, ' ').replace(/[#>*_`~]+/g, ' ').replace(/\s+/g, ' ').trim();
   return t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + ' …' : t;
 }
 
