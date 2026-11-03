@@ -1,0 +1,25 @@
+---
+// Home page. The markup lives in src/components/home.html, styles in public/css/home.css,
+// the animation (neutron events, image changer, cursor) in public/js/home.js.
+import home from '../components/home.html?raw';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CDT CASCADE Detector Technologies GmbH</title>
+    <meta name="description" content="Neutron instrumentation since 2006: detectors, readout electronics and software for neutron science. Made in Heidelberg, Germany." />
+    <link rel="icon" type="image/png" href="img/ef363c21761d6c2b0566f4c045857194.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Electrolize&family=Jura:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Carlito:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    <link rel="stylesheet" href="css/home.css" />
+  </head>
+  <body>
+    <Fragment set:html={home} />
+    <script is:inline src="js/products.js"></script>
+    <script is:inline src="js/home.js"></script>
+  </body>
+</html>
