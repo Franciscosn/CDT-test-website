@@ -96,7 +96,7 @@
   root.addEventListener('mousemove', function (e) {
     var mx = e.clientX, my = e.clientY;
     var hv = !!(e.target && e.target.closest && e.target.closest('a,button'));
-    if (fine && ring) {
+    if (false && ring) {
       ring.style.display = 'block';
       ring.style.transform = 'translate(' + mx + 'px, ' + my + 'px) scale(' + (hv ? 1.7 : 1) + ')';
       ring.style.background = hv ? '#FF660033' : 'transparent';
@@ -109,5 +109,4 @@
       if (inn) ms.style.background = 'radial-gradient(520px 190px at ' + nx + 'px ' + ny + 'px, rgba(225,235,255,.22) 0%, rgba(225,235,255,.07) 45%, rgba(225,235,255,0) 72%)'; }
   });
   root.addEventListener('mouseleave', function () { if (ring) ring.style.display = 'none'; if (ks) ks.style.opacity = '0'; if (ms) ms.style.opacity = '0'; });
-  if (!fine) root.style.cursor = 'auto';
 })();
