@@ -1,0 +1,35 @@
+# Content editor for the CDT test website (Decap/Sveltia CMS format)
+backend:
+  name: github
+  repo: Franciscosn/CDT-test-website
+  branch: main
+  commit_messages:
+    create: 'Lab log: add "{{slug}}"'
+    update: 'Lab log: update "{{slug}}"'
+    delete: 'Lab log: delete "{{slug}}"'
+
+site_url: https://franciscosn.github.io/CDT-test-website/
+display_url: https://franciscosn.github.io/CDT-test-website/
+
+media_folder: public/img/lablog
+public_folder: img/lablog
+
+collections:
+  - name: lablog
+    label: Lab log
+    label_singular: Lab log entry
+    folder: src/content/lablog
+    create: true
+    slug: '{{year}}-{{month}}-{{slug}}'
+    sortable_fields: [date, title]
+    summary: '{{date | date("YYYY-MM")}} · {{category}} · {{title}}'
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: Date, widget: datetime, time_format: false, date_format: YYYY-MM-DD, format: YYYY-MM-DD }
+      - name: category
+        label: Category
+        widget: select
+        options: [TALK, PRODUCTION, MILESTONE, PUBLICATION, DELIVERY, NEWS]
+      - { name: link, label: Link (optional), widget: string, required: false }
+      - { name: image, label: Image (optional), widget: image, required: false }
+      - { name: body, label: Text (optional), widget: markdown, required: false }
