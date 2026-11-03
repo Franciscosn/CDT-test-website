@@ -3,6 +3,7 @@
 // the animation (neutron events, image changer, cursor) in public/js/home.js.
 import home from '../components/home.html?raw';
 import { getCollection } from 'astro:content';
+import { header, url } from '../lib/chrome';
 
 // The three newest lab log entries replace the <!--LABLOG--> marker in home.html.
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -13,11 +14,11 @@ const mono = 'font-family: &quot;IBM Plex Mono&quot;, monospace;';
 const items = entries.map((e, i) => {
   const d = e.data.date.toISOString().slice(0, 7);
   const sep = i < entries.length - 1 ? ' border-right: 1px solid rgba(20, 20, 28, 0.15);' : '';
-  const href = e.data.link ? esc(e.data.link) : '#';
+  const href = url(`lablog/${e.slug}/`);
   return `<a class="log" href="${href}" style="flex: 1 1 0%;${sep}"><span class="ldate" style="${mono} font-size: 11.5px; color: rgb(128, 0, 0);">${d} · ${esc(e.data.category.toUpperCase())}</span><span class="lt" style="font-size: 14.5px; line-height: 1.35;">${esc(e.data.title)}</span></a>`;
 }).join('');
-const lablog = `<section class="lab" aria-label="Lab log" style="flex: 0 0 auto; display: flex; align-items: stretch; padding: 11px 44px; border-top: 1px solid rgb(20, 20, 28); background: rgb(255, 255, 255);"><a href="#" style="flex: 0 0 auto; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding-right: 22px; border-right: 2px solid rgb(0, 0, 255);"><span class="llab" style="${mono} font-size: 12px; letter-spacing: 2px; color: rgb(0, 0, 255);">LAB LOG</span><span class="lall" style="${mono} font-size: 11px; color: rgb(95, 94, 104);">all entries →</span></a><div class="logs" style="flex: 1 1 0%; display: flex;">${items}</div></section>`;
-const page = home.replace('<!--LABLOG-->', lablog);
+const lablog = `<section class="lab" aria-label="Lab log" style="flex: 0 0 auto; display: flex; align-items: stretch; padding: 11px 44px; border-top: 1px solid rgb(20, 20, 28); background: rgb(255, 255, 255);"><a href="${url('lablog/')}" style="flex: 0 0 auto; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding-right: 22px; border-right: 2px solid rgb(0, 0, 255);"><span class="llab" style="${mono} font-size: 12px; letter-spacing: 2px; color: rgb(0, 0, 255);">LAB LOG</span><span class="lall" style="${mono} font-size: 11px; color: rgb(95, 94, 104);">all entries →</span></a><div class="logs" style="flex: 1 1 0%; display: flex;">${items}</div></section>`;
+const page = home.replace('<!--LABLOG-->', lablog).replace(/<header[\s\S]*?<\/header>/, header());
 ---
 <!doctype html>
 <html lang="en">

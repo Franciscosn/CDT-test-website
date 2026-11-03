@@ -1,0 +1,29 @@
+---
+// Frame for all sub pages: same header, fonts, colours and cursor as the home page.
+import { header, footer, base } from '../lib/chrome';
+interface Props { title: string; description?: string; active?: 'lablog' }
+const { title, description = '', active } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/png" href={`${base}img/ef363c21761d6c2b0566f4c045857194.png`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Electrolize&family=Jura:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Carlito:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    <link rel="stylesheet" href={`${base}css/home.css`} />
+    <link rel="stylesheet" href={`${base}css/page.css`} />
+  </head>
+  <body>
+    <div class="root page">
+      <Fragment set:html={header(active)} />
+      <main class="pmain"><slot /></main>
+      <Fragment set:html={footer()} />
+    </div>
+  </body>
+</html>

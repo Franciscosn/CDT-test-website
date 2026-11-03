@@ -1,0 +1,39 @@
+---
+// One lab log entry.
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { url, asset, teaser, ymd } from '../../lib/chrome';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('lablog')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  return all.map((entry, i) => ({ params: { slug: entry.slug }, props: { entry, newer: all[i - 1] ?? null, older: all[i + 1] ?? null } }));
+}
+const { entry, newer, older } = Astro.props;
+const { Content } = await entry.render();
+const d = entry.data;
+---
+<Page title={`${d.title} · Lab log · CDT`} description={teaser(entry.body) || d.title} active="lablog">
+  <article class="lart">
+    <a class="lback" href={url('lablog/')}>← Lab log</a>
+    <header class="lplate lart-head">
+      <span class="lplate-k">{ymd(d.date)} · {d.category.toUpperCase()}</span>
+      <h1>{d.title}</h1>
+    </header>
+    {d.image && (
+      <figure class="kframe lart-img"><img src={asset(d.image)} alt={d.title} /></figure>
+    )}
+    <div class="lprose"><Content /></div>
+    {d.link && <p><a class="lmore" href={d.link}>→ More about this</a></p>}
+    <nav class="lpn" aria-label="More entries">
+      {newer ? <a href={url(`lablog/${newer.slug}/`)}><span>Newer</span>{newer.data.title}</a> : <span></span>}
+      {older ? <a class="lpn-r" href={url(`lablog/${older.slug}/`)}><span>Older</span>{older.data.title}</a> : <span></span>}
+    </nav>
+  </article>
+  <script is:inline define:vars={{ base: url('') }}>
+    document.querySelectorAll('.lprose img').forEach(function (i) {
+      var s = i.getAttribute('src') || '';
+      if (!/^(https?:)?\/\//.test(s) && s.charAt(0) !== '/') i.src = base + s;
+      else if (s.indexOf('/img/') === 0) i.src = base + s.slice(1);
+    });
+  </script>
+</Page>

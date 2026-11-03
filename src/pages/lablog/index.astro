@@ -1,0 +1,69 @@
+---
+// Lab log overview: every entry as a hit on a timeline wire, newest first, grouped by year.
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { url, asset, esc, teaser, ymd } from '../../lib/chrome';
+
+const entries = (await getCollection('lablog')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const cats = [...new Set(entries.map((e) => e.data.category.toUpperCase()))];
+const years = [...new Set(entries.map((e) => e.data.date.getUTCFullYear()))];
+const span = years.length ? (years.length > 1 ? `${years[years.length - 1]}–${years[0]}` : `${years[0]}`) : '';
+---
+<Page title="Lab log · CDT CASCADE Detector Technologies" description="Talks, deliveries and milestones from CDT in Heidelberg." active="lablog">
+  <section class="lhero">
+    <div class="lhero-in">
+      <div class="lplate">
+        <span class="lplate-k">CDT · HEIDELBERG</span>
+        <h1>Lab log</h1>
+        <p>Talks, deliveries and milestones from our workshop in Heidelberg, Germany.</p>
+        <span class="lplate-m">{entries.length} {entries.length === 1 ? 'entry' : 'entries'} · {span}</span>
+      </div>
+      <div class="lfilter" role="group" aria-label="Filter by category">
+        <button type="button" class="lchip on" data-f="*">ALL</button>
+        {cats.map((c) => <button type="button" class="lchip" data-f={c}>{c}</button>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="ltl" aria-label="Entries">
+    {years.map((y) => (
+      <div class="lyear" data-year={y}>
+        <div class="lyear-n">{y}</div>
+        <ol class="lrows">
+          {entries.filter((e) => e.data.date.getUTCFullYear() === y).map((e, i) => (
+            <li class="lrow" data-cat={e.data.category.toUpperCase()}>
+              <a href={url(`lablog/${e.slug}/`)}>
+                <span class="ldt">{ymd(e.data.date)}</span>
+                <span class="lnode" aria-hidden="true"><i></i></span>
+                <span class="lbody">
+                  <span class="lcat">{e.data.category.toUpperCase()}</span>
+                  <span class="ltitle">{e.data.title}</span>
+                  {teaser(e.body) && <span class="lteaser">{teaser(e.body)}</span>}
+                </span>
+                {e.data.image ? (
+                  <span class="lthumb kframe"><img src={asset(e.data.image)} alt="" loading="lazy" /></span>
+                ) : (
+                  <span class="lthumb lthumb-empty" aria-hidden="true"></span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))}
+  </section>
+
+  <script is:inline>
+    (function () {
+      var chips = document.querySelectorAll('.lchip'), rows = document.querySelectorAll('.lrow'), years = document.querySelectorAll('.lyear');
+      chips.forEach(function (c) {
+        c.addEventListener('click', function () {
+          var f = c.getAttribute('data-f');
+          chips.forEach(function (x) { x.classList.toggle('on', x === c); });
+          rows.forEach(function (r) { r.hidden = !(f === '*' || r.getAttribute('data-cat') === f); });
+          years.forEach(function (y) { y.hidden = !y.querySelector('.lrow:not([hidden])'); });
+        });
+      });
+    })();
+  </script>
+</Page>
